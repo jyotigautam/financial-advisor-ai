@@ -68,7 +68,7 @@ defmodule FinancialAdvisorAi.Workers.EmailSyncWorker do
       days_back: Keyword.get(opts, :days_back, 30)
     }
 
-    %{args: args}
+    args
     |> __MODULE__.new()
     |> Oban.insert()
   end
@@ -79,7 +79,7 @@ defmodule FinancialAdvisorAi.Workers.EmailSyncWorker do
   def schedule_recurring_sync(user_id, interval_minutes \\ 30) do
     args = %{user_id: user_id, days_back: 7}
 
-    %{args: args}
+    args
     |> __MODULE__.new(schedule_in: {interval_minutes, :minutes})
     |> Oban.insert()
   end
