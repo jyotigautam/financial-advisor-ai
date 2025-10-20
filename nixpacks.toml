@@ -8,9 +8,8 @@ cmds = ["mix local.hex --force", "mix local.rebar --force"]
 cmds = [
   "mix deps.get --only prod",
   "mix assets.deploy",
-  "mix compile",
-  "mix release"
+  "mix compile"
 ]
 
 [start]
-cmd = "_build/prod/rel/financial_advisor_ai/bin/server"
+cmd = "mix ecto.setup && mix phx.server"
