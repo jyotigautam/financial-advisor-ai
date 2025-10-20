@@ -134,8 +134,8 @@ config :ueberauth, Ueberauth,
   ]
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-  client_id: System.get_env("GOOGLE_CLIENT_ID"),
-  client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
+  client_id: System.get_env("GOOGLE_CLIENT_ID") || "dummy-client-id",
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET") || "dummy-client-secret"
 
 # Application configuration
 config :financial_advisor_ai,
