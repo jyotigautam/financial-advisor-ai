@@ -2,4 +2,7 @@
 set -eu
 
 cd -P -- "$(dirname -- "$0")"
+echo "Running database migrations..."
+./financial_advisor_ai eval "FinancialAdvisorAi.Release.migrate()"
+echo "Starting Phoenix server..."
 PHX_SERVER=true exec ./financial_advisor_ai start
