@@ -122,17 +122,7 @@ end
 # OAUTH AND API CONFIGURATION (All Environments)
 # =============================================================================
 
-# Google OAuth
-config :ueberauth, Ueberauth,
-  providers: [
-    google: {Ueberauth.Strategy.Google, [
-      default_scope: "email profile https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
-      callback_url: System.get_env("GOOGLE_REDIRECT_URI") || "http://localhost:4000/auth/google/callback",
-      access_type: "offline",
-      prompt: "consent"
-    ]}
-  ]
-
+# Google OAuth - Runtime credentials only (provider config is in config.exs)
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_CLIENT_ID") || "dummy-client-id",
   client_secret: System.get_env("GOOGLE_CLIENT_SECRET") || "dummy-client-secret"
