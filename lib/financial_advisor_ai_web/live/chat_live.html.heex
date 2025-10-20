@@ -1,0 +1,237 @@
+<div class="flex h-screen bg-gray-50">
+  <!-- Main Chat Container -->
+  <div class="flex flex-col w-full max-w-2xl mx-auto bg-white shadow-lg">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+      <h1 class="text-xl font-semibold text-gray-900">Ask Anything</h1>
+      <button class="text-gray-400 hover:text-gray-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex items-center gap-6 px-6 py-3 border-b border-gray-200">
+      <div class="ml-auto relative" x-data="{ open: false }">
+        <button
+          @click="open = !open"
+          class="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          Disconnect Apps
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div
+          x-show="open"
+          @click.away="open = false"
+          x-transition
+          class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10"
+          style="display: none;"
+        >
+          <div class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Connected Apps</div>
+
+          <%= if @sync_status.google_connected do %>
+            <button
+              phx-click="disconnect_google"
+              class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+              Disconnect Gmail (<%= @sync_status.emails_count %> emails)
+            </button>
+          <% else %>
+            <div class="px-4 py-2 text-sm text-gray-400">Gmail: Not connected</div>
+          <% end %>
+
+          <%= if @sync_status.hubspot_connected do %>
+            <button
+              phx-click="disconnect_hubspot"
+              class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+              Disconnect HubSpot (<%= @sync_status.contacts_count %> contacts)
+            </button>
+          <% else %>
+            <div class="px-4 py-2 text-sm text-gray-400">HubSpot: Not connected</div>
+          <% end %>
+
+          <div class="border-t border-gray-200 mt-2 pt-2">
+            <div class="px-4 py-1 text-xs text-gray-500">
+              <%= if @sync_status.google_connected || @sync_status.hubspot_connected do %>
+                Disconnecting will remove OAuth tokens but keep synced data
+              <% else %>
+                Connect apps to enable data sync and RAG search
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Sync Status & Controls -->
+    <div class="px-6 py-3 bg-blue-50 border-b border-blue-100">
+      <div class="flex items-center justify-between">
+        <div class="text-sm">
+          <span class="font-medium text-blue-900">Data Status:</span>
+          <span class="text-blue-700 ml-2">
+            <%= if @sync_status.google_connected do %>
+              📧 <%= @sync_status.emails_count %> emails
+            <% else %>
+              📧 Not connected
+            <% end %>
+          </span>
+          <span class="text-blue-700 ml-3">
+            <%= if @sync_status.hubspot_connected do %>
+              👥 <%= @sync_status.contacts_count %> contacts
+            <% else %>
+              👥 Not connected
+            <% end %>
+          </span>
+        </div>
+        <div class="flex gap-2">
+          <%= if @sync_status.google_connected do %>
+            <button
+              phx-click="sync_emails"
+              class="px-3 py-1 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded hover:bg-blue-50 transition-colors"
+            >
+              Sync Gmail
+            </button>
+          <% else %>
+            <a href="/auth/google" class="px-3 py-1 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded hover:bg-blue-50 transition-colors">
+              Connect Gmail
+            </a>
+          <% end %>
+          <%= if @sync_status.hubspot_connected do %>
+            <button
+              phx-click="sync_contacts"
+              class="px-3 py-1 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded hover:bg-blue-50 transition-colors"
+            >
+              Sync HubSpot
+            </button>
+          <% else %>
+            <a href="/auth/hubspot/authorize" class="px-3 py-1 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded hover:bg-blue-50 transition-colors">
+              Connect HubSpot
+            </a>
+          <% end %>
+        </div>
+      </div>
+      <%= if @sync_status.last_email_sync || @sync_status.last_contact_sync do %>
+        <div class="text-xs text-blue-600 mt-1">
+          Last synced:
+          <%= if @sync_status.last_email_sync do %>
+            Gmail <%= Timex.from_now(@sync_status.last_email_sync) %>
+          <% end %>
+          <%= if @sync_status.last_contact_sync do %>
+            • HubSpot <%= Timex.from_now(@sync_status.last_contact_sync) %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="flex-1 overflow-y-auto px-6 py-6 space-y-4" id="messages-container">
+      <%= for message <- @messages do %>
+        <%= if message.role == "assistant" do %>
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
+              AI
+            </div>
+            <div class="flex-1">
+              <div class="text-sm text-gray-900 leading-relaxed">
+                <%= message.content %>
+              </div>
+
+              <%!-- Render meeting cards if metadata contains meetings --%>
+              <%= if message.metadata && message.metadata["meetings"] do %>
+                <div class="mt-4 space-y-3">
+                  <%= for meeting <- message.metadata["meetings"] do %>
+                    <div class="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+                      <div class="text-xs text-gray-500 mb-2"><%= meeting["date"] %></div>
+                      <div class="text-sm text-gray-600 mb-1"><%= meeting["time"] %></div>
+                      <div class="text-base font-medium text-gray-900 mb-2"><%= meeting["title"] %></div>
+                      <div class="flex -space-x-2">
+                        <%= for attendee <- Enum.take(meeting["attendees"], 4) do %>
+                          <div class="w-6 h-6 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center text-xs font-medium text-gray-700">
+                            <%= String.first(attendee) %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% else %>
+          <%!-- User message --%>
+          <div class="flex items-start gap-3 justify-end">
+            <div class="max-w-md">
+              <div class="px-4 py-3 bg-blue-500 text-white rounded-2xl rounded-tr-sm">
+                <p class="text-sm leading-relaxed"><%= message.content %></p>
+              </div>
+            </div>
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 text-sm font-medium">
+              <%= String.first(@current_user.name || "U") %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- Input Area -->
+    <div class="border-t border-gray-200 p-4 bg-white">
+      <form phx-submit="send_message" class="flex items-center gap-2">
+        <button type="button" class="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+        </button>
+
+        <select
+          name="context"
+          class="flex-shrink-0 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="all_meetings">All meetings</option>
+          <option value="all_emails">All emails</option>
+          <option value="hubspot">HubSpot contacts</option>
+        </select>
+
+        <input
+          type="text"
+          name="message"
+          placeholder="Ask anything about your mails, meetings..."
+          autocomplete="off"
+          class="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+
+        <button type="button" class="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </button>
+
+        <button type="button" class="flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-scroll to bottom when new messages arrive
+  const container = document.getElementById('messages-container');
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+</script>
