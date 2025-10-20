@@ -13,4 +13,4 @@ cmds = [
 ]
 
 [start]
-cmd = "/app/bin/server"
+cmd = "_build/prod/rel/financial_advisor_ai/bin/server"
