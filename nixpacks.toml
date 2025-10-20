@@ -1,11 +1,16 @@
 [phases.setup]
 nixPkgs = ["...", "postgresql"]
 
-[phases.build]
-cmds = ["mix deps.get --only prod", "mix assets.deploy", "mix compile"]
-
 [phases.install]
 cmds = ["mix local.hex --force", "mix local.rebar --force"]
+
+[phases.build]
+cmds = [
+  "mix deps.get --only prod",
+  "mix assets.deploy",
+  "mix compile",
+  "mix release"
+]
 
 [start]
 cmd = "/app/bin/server"
