@@ -1,7 +1,0 @@
-[build]
-builder = "nixpacks"
-
-[deploy]
-startCommand = "/app/bin/server"
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 10
